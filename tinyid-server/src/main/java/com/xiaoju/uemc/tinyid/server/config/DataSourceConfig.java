@@ -4,17 +4,16 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author du_imba
@@ -34,16 +33,20 @@ public class DataSourceConfig {
     public DataSource getDynamicDataSource() {
         DynamicDataSource routingDataSource = new DynamicDataSource();
         List<String> dataSourceKeys = new ArrayList<>();
-        RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "datasource.tinyid.");
-        String names = propertyResolver.getProperty("names");
-        String dataSourceType = propertyResolver.getProperty("type");
+
+        Iterable sources = ConfigurationPropertySources.get(environment);
+        Binder binder = new Binder(sources);
+        BindResult<HashMap> bindResult = binder.bind("datasource.tinyid", HashMap.class);
+        HashMap stringObjectMap = bindResult.get();
+        String names = (String) stringObjectMap.get("names");
+        String dataSourceType = (String)stringObjectMap.get("type");
 
         Map<Object, Object> targetDataSources = new HashMap<>(4);
         routingDataSource.setTargetDataSources(targetDataSources);
         routingDataSource.setDataSourceKeys(dataSourceKeys);
         // 多个数据源
         for (String name : names.split(SEP)) {
-            Map<String, Object> dsMap = propertyResolver.getSubProperties(name + ".");
+            Map<String, Object> dsMap = (Map<String, Object>) stringObjectMap.get(name);
             DataSource dataSource = buildDataSource(dataSourceType, dsMap);
             buildDataSourceProperties(dataSource, dsMap);
             targetDataSources.put(name, dataSource);

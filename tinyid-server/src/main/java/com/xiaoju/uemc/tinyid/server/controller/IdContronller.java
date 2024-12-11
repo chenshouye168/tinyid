@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
  * @author du_imba
  */
 @RestController
-@RequestMapping("/id/")
+@RequestMapping("/tinyid/id/")
 public class IdContronller {
 
     private static final Logger logger = LoggerFactory.getLogger(IdContronller.class);
@@ -34,7 +35,7 @@ public class IdContronller {
     private Integer batchSizeMax;
 
     @RequestMapping("nextId")
-    public Response<List<Long>> nextId(String bizType, Integer batchSize, String token) {
+    public Response<List<Long>> nextId(@RequestParam("bizType") String bizType, @RequestParam("batchSize")Integer batchSize, @RequestParam("token")String token) {
         Response<List<Long>> response = new Response<>();
         Integer newBatchSize = checkBatchSize(batchSize);
         if (!tinyIdTokenService.canVisit(bizType, token)) {
@@ -65,7 +66,7 @@ public class IdContronller {
     }
 
     @RequestMapping("nextIdSimple")
-    public String nextIdSimple(String bizType, Integer batchSize, String token) {
+    public String nextIdSimple(@RequestParam("bizType")String bizType, @RequestParam("batchSize")Integer batchSize, @RequestParam("token")String token) {
         Integer newBatchSize = checkBatchSize(batchSize);
         if (!tinyIdTokenService.canVisit(bizType, token)) {
             return "";
@@ -91,7 +92,7 @@ public class IdContronller {
     }
 
     @RequestMapping("nextSegmentId")
-    public Response<SegmentId> nextSegmentId(String bizType, String token) {
+    public Response<SegmentId> nextSegmentId(@RequestParam("bizType")String bizType, @RequestParam("token")String token) {
         Response<SegmentId> response = new Response<>();
         if (!tinyIdTokenService.canVisit(bizType, token)) {
             response.setCode(ErrorCode.TOKEN_ERR.getCode());
@@ -110,7 +111,7 @@ public class IdContronller {
     }
 
     @RequestMapping("nextSegmentIdSimple")
-    public String nextSegmentIdSimple(String bizType, String token) {
+    public String nextSegmentIdSimple(@RequestParam("bizType")String bizType, @RequestParam("token")String token) {
         if (!tinyIdTokenService.canVisit(bizType, token)) {
             return "";
         }

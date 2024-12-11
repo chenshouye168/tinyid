@@ -1,20 +1,17 @@
 package com.xiaoju.uemc.tinyid.server.filter;
 
+
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -23,7 +20,7 @@ import java.util.Map;
  */
 @Component
 @ServletComponentScan
-@WebFilter(urlPatterns = "/*", filterName = "requestFilter")
+@WebFilter(urlPatterns = "/*")
 public class RequestFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestFilter.class);
