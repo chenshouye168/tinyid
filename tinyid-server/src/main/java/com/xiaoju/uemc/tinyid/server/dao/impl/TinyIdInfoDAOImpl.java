@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -35,9 +36,9 @@ public class TinyIdInfoDAOImpl implements TinyIdInfoDAO {
     @Override
     public int updateMaxId(Long id, Long newMaxId, Long oldMaxId, Long version, String bizType) {
         String sql = "update tiny_id_info set max_id= ?," +
-                " update_time=now(), version=version+1" +
+                " update_time=?, version=version+1" +
                 " where id=? and max_id=? and version=? and biz_type=?";
-        return jdbcTemplate.update(sql, newMaxId, id, oldMaxId, version, bizType);
+        return jdbcTemplate.update(sql, newMaxId, LocalDateTime.now(),id, oldMaxId, version, bizType);
     }
 
 
